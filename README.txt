@@ -1,0 +1,46 @@
+// TODO
+// * border highlight on preview tile
+// * indicate selected tiles
+
+// tile information
+// image name, points, chance of appearing in input list
+
+// also see http://jlongster.com/Making-Sprite-based-Games-with-Canvas
+
+// More hexagon implementations
+// proper ones - with axial, cube approaches
+// http://www.redblobgames.com/grids/hexagons/
+
+// D- need an overlay that will show currently selected tile
+// D- tiles part of selection will move randomly within a 2-4 pixel boundary
+//    of their existing
+// D- twinkly stars over a match
+// D- when selection is made tiles will explode in particle effect  (didn't like)
+// -- consider showing every selection, so red, then green, then purple, etc
+// -- have a miniature version of the to-be placed tile by the cursor when
+//    within the grid.  if works.
+// -- modify drawing code so that only redraws if there has been a change
+//    (include animations in this)
+// -- display border, title
+// D- display score
+// D- display pipe of next 5 tiles
+// -- as a new 'order' is unlocked then it becomes available as a random choice
+//    Have random choices come a list of random %, where the lowest order is always
+//    the greatest and the highest unlocked is always the lowest
+
+// -- after the 3rd or so level is reached there is no match, but instead the
+//    hex is destroyed.
+// -- hexes that are removed as part of a match go towards points.  when a points
+//    limit is reached then the next piece is allowed to go on a vanished hex,
+//    i.e. rebuild the map.
+
+// -- dead tile - something that doesn't match at all
+// -- bug - top tiles match to dead tile
+// III need to change orders/g_tiles
+
+// -- graphically show the order of matching
+
+// -- every n tiles placed a water tile randomly disappears
+
+// -- SPRITE to be changed so accepts a file definition
+
