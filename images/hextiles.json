@@ -1,0 +1,10 @@
+[
+{"spritename":"clayHex.gif","x":0,"y":0,"height":64,"width":55},
+{"spritename":"waterHex.gif","x":55,"y":0,"height":64,"width":55},
+{"spritename":"wheatHex.gif","x":110,"y":0,"height":64,"width":55},
+{"spritename":"oreHex.gif","x":165,"y":0,"height":64,"width":55},
+{"spritename":"desertHex.gif","x":220,"y":0,"height":64,"width":55},
+{"spritename":"sheepHex.gif","x":275,"y":0,"height":64,"width":55},
+{"spritename":"woodHex.gif","x":330,"y":0,"height":64,"width":55},
+{"spritename":"deadHex.gif",x:385,"y":0,"height":64,"width":55}
+]
