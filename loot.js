@@ -13,6 +13,9 @@ LOOT.prototype.add = function(name, weight) {
 	this.items.push(
 		{name:name, weight:weight, start:this.total, end:this.total+weight}
 	);
+
+	console.log('add ' + name + ' start:' + this.total + ' end:' + this.total+Number(weight));
+
 	this.total += weight;
 };
 
@@ -24,6 +27,7 @@ LOOT.prototype.pick = function() {
 	this.items.some(function(entry) {
 				
 		if (r >= entry.start && r <= entry.end) {
+			console.log(entry.name + ' r:' + r + ' start:' + entry.start + ' end:' + entry.end);
 			result = entry.name;
 			return true;
 		}

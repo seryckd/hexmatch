@@ -4,8 +4,27 @@
 // http://www.jslint.com
 // http://eslint.org
 
+// ----------------------------------------------------------------------------
+
+/** This script finds the real position of an element, 
+ * so if you resize the page and run the script again, 
+ * it points to the correct new position of the element.
+ */
+function position(el){
+  for (var pos=[0,0];el;el=el.offsetParent){
+    pos[0] +=  el.offsetLeft-el.scrollLeft;
+    pos[1] +=  el.offsetTop-el.scrollTop;
+  }
+  return pos; 
+} 
+
+// ----------------------------------------------------------------------------
+
+
 // Need canvas so we can add listeners to it
 var canvas = document.createElement("canvas");
+
+console.log('canvas (creation) ' + window.innerWidth + ',' + window.innerHeight);
 
 // Must apply prototype before 'new HexData' in HEX.init()
 HexData.prototype.image = "water";
@@ -98,6 +117,7 @@ var constants = {
 var g_loot = new LOOT();
 g_loot.add(6, 1);
 g_loot.add(0, 40);
+g_loot.add(1, 30);
 g_highestMatchLevel = constants.firstMatchLevel;
 
 var score = 0;
@@ -181,22 +201,22 @@ var g_tiles = [ "wheat", "sheep", "wood", "ore", "clay", "desert", "dead" ];
 // [O] sels		array of tiles
 function consider(hex, matchLevel, sels) {
 
-	if (matchLevel > constants.lastMatchLevel)
-		return;
+  if (matchLevel > constants.lastMatchLevel)
+    return;
 
-    // consider all hexes on the 1st ring out
-    HEX.neighbours(hex, function(n1, direct) {
-      if (n1.getImage() == g_tiles[matchLevel]) {
-        sels.push(n1);
+  // consider all hexes on the 1st ring out
+  HEX.neighbours(hex, function(n1, direct) {
+    if (n1.getImage() == g_tiles[matchLevel]) {
+      sels.push(n1);
 
-        // now look at the joining neigbours on the 2nd ring out
-        HEX.neighbours(n1, function(n2, direct) {
-          if (n2.getImage() == g_tiles[matchLevel]) {
-            sels.push(n2);
-          }
-        }, direct);
-      }
-    });
+      // now look at the joining neigbours on the 2nd ring out
+      HEX.neighbours(n1, function(n2, direct) {
+	if (n2.getImage() == g_tiles[matchLevel]) {
+	  sels.push(n2);
+	}
+      }, direct);
+    }
+  });
 };
 
 // setTile
@@ -209,59 +229,67 @@ function consider(hex, matchLevel, sels) {
 //				Output is only set if matches.length > 0
 function setTile(hex, matches, matchLevel) {
 
-	// what happens when at highest matchLevel ?
-	do {
-		var sels = [];
-		consider(hex, matchLevel, sels);
-
-		if (sels.length >= 2) {
-			matchLevel++;
-			sels.forEach(function(entry){
-				matches.push(entry);
-			});
-		}
-	} while(sels.length >= 2 && matchLevel < constants.lastMatchLevel);
-
-	return matchLevel;
+  // what happens when at highest matchLevel ?
+  do {
+    var sels = [];
+    consider(hex, matchLevel, sels);
+  
+    if (sels.length >= 2) {
+      matchLevel++;
+      sels.forEach(function(entry){
+	matches.push(entry);
+      });
+    }
+  } while(sels.length >= 2 && matchLevel < constants.lastMatchLevel);
+  
+  return matchLevel;
 };
 
 
 // Keeps track of the current tile and any other tiles that form the match.
 // This is used to show the match that could be made if the current tile was set.
 var possible = {
-	hex: null,
-	matchLevel: 0,
-	matches: [],
+    hex: null,
+    matchLevel: 0,
+    matches: [],
 
-	// Removes the current match.  Also resets the matching tiles display
-	// coordinates in case they were in the middle of an animation
-	clear: function() {
+    // Removes the current match.  Also resets the matching tiles display
+    // coordinates in case they were in the middle of an animation
+    clear: function() {
 
-		for (var i = 0, len = this.matches.length; i < len; i++) {
-			var hex = this.matches[i];
-			hex.setDisplayCoords(hex.xycoords);
-		}
+      for (var i = 0, len = this.matches.length; i < len; i++) {
+	var hex = this.matches[i];
+	hex.setDisplayCoords(hex.xycoords);
+      }
 
-		this.hex=null;
-		this.matches=[];
-	},
+      this.hex=null;
+      this.matches=[];
+    },
 
-	// [I] hex:		new current tile
-	// [I] ord:		original order (may be changed if other tiles match)
-	set: function(hex, matchLevel) {
-		this.clear();
-		this.hex = hex;
-		this.matchLevel = setTile(hex, this.matches, matchLevel);
-	}
+    // [I] hex:		new current tile
+    // [I] ord:		original order (may be changed if other tiles match)
+    set: function(hex, matchLevel) {
+      this.clear();
+      this.hex = hex;
+      this.matchLevel = setTile(hex, this.matches, matchLevel);
+    }
 };
+
 
 // Track the mouse and apply the next tile to the tile the mouse is over
 canvas.addEventListener("mousemove", function(e) {
+  
+  // clientX, clientY in local (DOM content) coords
+  // screenX, screenY in global (screen) coords
+
+  var offset = position(canvas);
+  
   // clientX, clientY are Browser Window coords, (0,0) is top left
   // offsetLeft, offsetTop are window coords of the canvas
-  var mx = e.clientX - canvas.offsetLeft;
-  var my = e.clientY - canvas.offsetTop;
 
+  var mx = e.clientX - offset[0];
+  var my = e.clientY - offset[1];
+  
   // identify which hexagon
   var hex = HEX.select(mx, my);
 
@@ -279,8 +307,11 @@ canvas.addEventListener("mousemove", function(e) {
 canvas.addEventListener("click", function(e) {
   // clientX, clientY are Browser Window coords, (0,0) is top left
   // offsetLeft, offsetTop are window coords of the canvas
-  var mx = e.clientX - canvas.offsetLeft;
-  var my = e.clientY - canvas.offsetTop;
+  
+  var offset = position(canvas);
+ 
+  var mx = e.clientX - offset[0];
+  var my = e.clientY - offset[1];
 
   // identify which hexagon
   var hex = HEX.select(mx, my);
@@ -307,7 +338,7 @@ canvas.addEventListener("click", function(e) {
 
     // plus additional points for every extra tile used
     if (matches.length > 2)
-	    score += ((matches.length-2) * 100);
+      score += ((matches.length-2) * 100);
 
 	// remove the next tile and replace with another one
     g_currenttile = g_tileQueue.next(g_loot.pick());
@@ -316,7 +347,7 @@ canvas.addEventListener("click", function(e) {
 //    g_tilepipe.push(g_loot.pick());
     
     matches.forEach(function(entry){
-	    entry.setImage("water");
+      entry.setImage("water");
     });
 
     if (matches.length > 0) {
@@ -525,6 +556,8 @@ canvas.width = HEX.boundingRect().width;
 canvas.height = HEX.boundingRect().height + 50;
 
 document.body.appendChild(canvas);
+
+console.log('canvas (set) ' + canvas.width + ',' + canvas.height);
 
 var then = Date.now();
 // 20ms is playable

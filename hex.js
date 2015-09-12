@@ -143,8 +143,8 @@ var HEX = (function() {
 	// height of hex in pixels
 	init: function(dx, dy, numcol_, numrow_, width, height) {
     	
-    	xyoffset.x = dx;
-    	xyoffset.y = dy;
+		xyoffset.x = dx;
+		xyoffset.y = dy;
     
 		numcol = numcol_;
 		numrow = numrow_;
