@@ -305,60 +305,63 @@ canvas.addEventListener("mousemove", function(e) {
 
 // mouse click
 canvas.addEventListener("click", function(e) {
-  // clientX, clientY are Browser Window coords, (0,0) is top left
-  // offsetLeft, offsetTop are window coords of the canvas
-  
-  var offset = position(canvas);
- 
-  var mx = e.clientX - offset[0];
-  var my = e.clientY - offset[1];
+	// clientX, clientY are Browser Window coords, (0,0) is top left
+	// offsetLeft, offsetTop are window coords of the canvas
 
-  // identify which hexagon
-  var hex = HEX.select(mx, my);
+	var offset = position(canvas);
 
-  if (hex != null) {
-    if (hex.getImage() != "water")
-      return;
+	var mx = e.clientX - offset[0];
+	var my = e.clientY - offset[1];
 
-    possible.clear();
+	// particle explosion!
+	particles.add(mx, my, { type:PartGenCircle.prototype, number:10, numRings:0 } );
 
-    var matches = [];
-    var matchLevel = setTile(hex, matches, g_currenttile);
-    
-    if (matchLevel > g_highestMatchLevel) {
-    	g_highestMatchLevel = matchLevel;
-    	g_loot.add(matchLevel, 10);
-    }
+	// identify which hexagon
+	var hex = HEX.select(mx, my);
 
-    hex.setImage(g_tiles[matchLevel]);
+	if (hex != null) {
+		if (hex.getImage() != "water")
+		  return;
 
-    // scoring system
-    // 10 points per tile * order/level
-    score += ((matchLevel+1) * 100);
+		possible.clear();
 
-    // plus additional points for every extra tile used
-    if (matches.length > 2)
-      score += ((matches.length-2) * 100);
+		var matches = [];
+		var matchLevel = setTile(hex, matches, g_currenttile);
 
-	// remove the next tile and replace with another one
-    g_currenttile = g_tileQueue.next(g_loot.pick());
-    
-    // Add a new tile to the end of the pipe    
-//    g_tilepipe.push(g_loot.pick());
-    
-    matches.forEach(function(entry){
-      entry.setImage("water");
-    });
+		if (matchLevel > g_highestMatchLevel) {
+			g_highestMatchLevel = matchLevel;
+			g_loot.add(matchLevel, 10);
+		}
 
-    if (matches.length > 0) {
-// TODO try out removing hex, didn't like
-//			HEX.remove(hex);
+		hex.setImage(g_tiles[matchLevel]);
 
-		// particle explosion!
-		particles.add(hex.centercoords.x, hex.centercoords.y, 
-			{ number:10, numRings:matchLevel-2 } );
-    }
-  }
+		// scoring system
+		// 10 points per tile * order/level
+		score += ((matchLevel+1) * 100);
+
+		// plus additional points for every extra tile used
+		if (matches.length > 2)
+		  score += ((matches.length-2) * 100);
+
+		// remove the next tile and replace with another one
+		g_currenttile = g_tileQueue.next(g_loot.pick());
+
+		// Add a new tile to the end of the pipe    
+		//    g_tilepipe.push(g_loot.pick());
+
+		matches.forEach(function(entry){
+			entry.setImage("water");
+		});
+
+		if (matches.length > 0) {
+		// TODO try out removing hex, didn't like
+		//			HEX.remove(hex);
+
+			// particle explosion!
+			particles.add(hex.centercoords.x, hex.centercoords.y,
+				{ type:PartGenCircle.prototype, number:10, numRings:matchLevel-1 } );
+		}
+	}
 }, false);
 
 // interval in ms
