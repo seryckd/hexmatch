@@ -3,6 +3,9 @@
 //   in which case do not need to specify height and width on every line 
 //   although can override if want
 
+/*globals IMAGE*/
+"use strict";
+
 /*
 SpriteRef = {
  name : "",
@@ -33,102 +36,112 @@ spriteanim.update(time);
 var spriteref = spriteanim.image(time);
 */
 
-var SpriteInfo = function(info, image) {
-  this.name = info.name;
-  this.height = info.height;
-  this.width = info.width;
-  this.x = info.x;
-  this.y = info.y;
-  
-  // reference to SpriteSheet.image
-  this.image = image;
+var SpriteInfo = function (info, image) {
+   this.name = info.name;
+   this.height = info.height;
+   this.width = info.width;
+   this.x = info.x;
+   this.y = info.y;
+
+   // reference to SpriteSheet.image
+   this.image = image;
 };
 
-var SpriteAnimation = function(animation) {
-  this.animation = animation;
-  this.name = animation.name;
-  
-  this.elapsedms = 0;
-  this.currentframe = 0;
-  this.currentsprite = this.animation.sprites[0];
+var SpriteAnimation = function (animation) {
+   this.animation = animation;
+   this.name = animation.name;
+
+   this.elapsedms = 0;
+   this.currentframe = 0;
+   this.currentsprite = this.animation.sprites[0];
 };
 
-SpriteAnimation.prototype.update = function(intervalms){
+SpriteAnimation.prototype.update = function (intervalms) {
 
-  this.elapsedms += intervalms;
-  
-  if (this.elapsedms >= this.animation.durationms) {
-    this.elapsedms = 0;
-    
-    if (++this.currentframe >= this.animation.sprites.length)
-      this.currentframe = 0;
-      
-    this.currentsprite = this.animation.sprites[this.currentframe];
-  }
-};
+   this.elapsedms += intervalms;
 
-SpriteAnimation.prototype.sprite = function() {
-  return this.currentsprite;
-}
+   if (this.elapsedms >= this.animation.durationms) {
+      this.elapsedms = 0;
+      this.currentframe += 1;
 
-var SPRITE = (function() {
-
-  sheets = {};
-
-  return {
-    // Public Interface
-    
-    load: function(name, filename, sprites, animations) {
-	
-      var image = IMAGE.load(name, filename);
-      
-      var sheet = {
-        name: name,
-        image: image,
-        sprites: [],		// map name, SpriteInfo
-        animations: []		// map name, SpriteAnimation
-      };
-      
-      for(var count=0; count<sprites.length; ++count) {
-        var sprite = sprites[count];
-        sheet.sprites[sprite.name] = new SpriteInfo(sprite, image);
+      if (this.currentframe >= this.animation.sprites.length) {
+         this.currentframe = 0;
       }
-      
-      if (animations)
-        for(var count2=0; count2<animations.length; ++count2) {
-          var animation = animations[count2];
 
-          var spriteinfos = [];
-          for(var count3=0; count3<animation.spritenames.length; ++count3) {
-            var spritename = animation.spritenames[count3];
-            var spriteinfo = sheet.sprites[spritename];
-            spriteinfos.push(spriteinfo);
-          };          
+      this.currentsprite = this.animation.sprites[this.currentframe];
+   }
+};
 
-          sheet.animations[animation.name] = {
-            name: animation.name,
-            durationms: animation.durationms,
-            sprites: spriteinfos,
-            
-            makeinstance: function() {
-              return new SpriteAnimation(this);
+SpriteAnimation.prototype.sprite = function () {
+   return this.currentsprite;
+};
+
+var SPRITE = (function () {
+
+   var sheets = {};
+
+   return {
+      // Public Interface
+
+      load: function (name, filename, sprites, animations) {
+
+         var image = IMAGE.load(name, filename),
+            sheet = {
+               name: name,
+               image: image,
+               sprites: [], // map name, SpriteInfo
+               animations: [] // map name, SpriteAnimation
+            },
+            count,
+            count2,
+            count3,
+            sprite,
+            animation,
+            spriteinfos,
+            spriteinfo,
+            spritename;
+
+         for (count = 0; count < sprites.length; count += 1) {
+            sprite = sprites[count];
+            sheet.sprites[sprite.name] = new SpriteInfo(sprite, image);
+         }
+
+         if (animations) {
+            for (count2 = 0; count2 < animations.length; count2 += 1) {
+               animation = animations[count2];
+
+               spriteinfos = [];
+               for (count3 = 0; count3 < animation.spritenames.length; count3 += 1) {
+                  spritename = animation.spritenames[count3];
+                  spriteinfo = sheet.sprites[spritename];
+                  spriteinfos.push(spriteinfo);
+               }
+
+               sheet.animations[animation.name] = {
+                  name: animation.name,
+                  durationms: animation.durationms,
+                  sprites: spriteinfos,
+
+                  makeinstance: function () {
+                     return new SpriteAnimation(this);
+                  }
+               };
             }
-          };
- 		}
-      
-      sheets[name] = sheet;
-    },
-    
-    // return SpriteInfo
-    sprite: function(sheetname, spritename) {
-      return sheets[sheetname].sprites[spritename];
-    },
-    
-    // return SpriteAnimation
-    animation: function(sheetname, animationname) {
-      var sa = sheets[sheetname].animations[animationname];
-      return sa.makeinstance();
-    }
-  };
+         }
+
+         sheets[name] = sheet;
+      },
+
+      // return SpriteInfo
+      sprite: function (sheetname, spritename) {
+         return sheets[sheetname].sprites[spritename];
+      },
+
+      // return SpriteAnimation
+      animation: function (sheetname, animationname) {
+         var sa = sheets[sheetname].animations[animationname];
+         return sa.makeinstance();
+      }
+   };
 
 }());

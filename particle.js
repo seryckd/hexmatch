@@ -1,3 +1,4 @@
+/*jslint browser: true, devel: true*/
 // Ideas for particles
 //
 //  -- animation
@@ -22,21 +23,21 @@
 //  add() to take an object, including name of generator
 
 function Particle(x, y) {
-	this.posx = x;
-	this.posy = y;
-	this.elapsedms = 0;
-	this.startx = x;
-	this.starty = y;
-	
-	this.attrs = {}
+   this.posx = x;
+   this.posy = y;
+   this.elapsedms = 0;
+   this.startx = x;
+   this.starty = y;
+
+   this.attrs = {};
 };
 
-Particle.prototype.setAttr = function(name, value) {
-	this.attrs[name] = value;
+Particle.prototype.setAttr = function (name, value) {
+   this.attrs[name] = value;
 };
 
-Particle.prototype.getAttr = function(name) {
-	return this.attrs[name];
+Particle.prototype.getAttr = function (name) {
+   return this.attrs[name];
 };
 
 
@@ -45,34 +46,32 @@ Particle.prototype.getAttr = function(name) {
 //
 
 function PARTICLE() {
-	this.generators = [];
+   this.generators = [];
+}
+
+PARTICLE.prototype.add = function (x, y, attrs) {
+   if (isNaN(x) || isNaN(y)) {
+      console.log('failed to PARTICLE.add(' + x + ',' + y);
+      return;
+   }
+
+   var genproto = attrs.type,
+      //TODO how to create object with prototype and arguments
+      generator = new genproto.constructor();
+
+   generator.init(x, y, attrs);
+
+   this.generators.push(generator);
 };
 
-PARTICLE.prototype.add = function(x, y, attrs) {
-	if (typeof x == NaN || typeof y == NaN) {
-		console.log('failed to PARTICLE.add(' + x + ',' + y);
-		return;
-	}
-	
-	var genproto = attrs.type;
-		
-	//TODO how to create object with prototype and arguments
-	var generator = new genproto.constructor();
-	generator.init(x, y, attrs);
-	
-	this.generators.push(generator);
+PARTICLE.prototype.update = function (intervalms, boundingrect) {
+   this.generators.filter(function (p, index, filter) {
+      return p.update(intervalms, boundingrect);
+   });
 };
 
-PARTICLE.prototype.update = function(intervalms, boundingrect) {
-	this.generators.filter(function(p, index, filter) {
-		return p.update(intervalms, boundingrect);
-	});
+PARTICLE.prototype.render = function (ctx) {
+   this.generators.forEach(function (g, index, gs) {
+      g.render(ctx);
+   });
 };
-
-PARTICLE.prototype.render = function(ctx) {
-	this.generators.forEach(function(g, index, gs) {
-		g.render(ctx);
-	});
-};
-
-
