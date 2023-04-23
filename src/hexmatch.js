@@ -26,7 +26,8 @@ function position(el) {
 
 
 // Need canvas so we can add listeners to it
-var canvas = document.createElement("canvas");
+//var canvas = document.createElement("canvas");
+var canvas = document.getElementById('canvas');
 
 console.log('canvas (creation) ' + window.innerWidth + ',' + window.innerHeight);
 
@@ -800,7 +801,7 @@ var main = function () {
 canvas.width = HEX.boundingRect().width;
 canvas.height = HEX.boundingRect().height + 50;
 
-document.body.appendChild(canvas);
+//document.body.appendChild(canvas);
 
 console.log('canvas (set) ' + canvas.width + ',' + canvas.height);
 
