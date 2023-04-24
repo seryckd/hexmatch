@@ -505,6 +505,8 @@ canvas.addEventListener("mousemove", function (e) {
       }
 
       possible.set(hex, g_currenttile);
+   } else {
+      possible.clear();
    }
 });
 
