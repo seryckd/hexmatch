@@ -74,6 +74,8 @@ HEX.each(function (hex) {
 
 IMAGE.load("marker", "images/marker.gif");
 
+IMAGE.load("whitemask", "images/white-mask.gif");
+
 SPRITE.load("hexes", "images/hextiles.png", [
    {
       name: "clay",
@@ -297,6 +299,15 @@ function drawHex(ctx, spritename, x, y) {
    ctx.drawImage(ref.image,
       ref.x, ref.y, ref.width, ref.height,
       x, y, ref.width, ref.height);
+}
+
+function drawHighlight(ctx, x, y) {
+
+   ctx.globalAlpha = 0.5;
+   ctx.drawImage(IMAGE.image('whitemask'),
+      0, 0, 55, 64,
+      x, y, 55, 64);
+   ctx.globalAlpha = 1.0;
 }
 
 function drawSmallHex(ctx, spritename, x, y) {
@@ -594,7 +605,7 @@ function update(interval) {
 
    this.counter += interval;
 
-   console.log('counter:' + this.counter);
+   //console.log('counter:' + this.counter);
 
    var isUpdate = false;
 
@@ -605,6 +616,9 @@ function update(interval) {
 
    if (possible.hex !== null && isUpdate) {
 
+      /*
+
+      // implement random wobbling
       possible.matches.forEach(function (hex) {
 
          var directions = [{
@@ -666,6 +680,7 @@ function update(interval) {
          });
 
       });
+      */
    }
 
    if (shineanim !== null) {
@@ -694,7 +709,7 @@ var render = function () {
       match = false;
 
       possible.matches.forEach(function (hex) {
-         drawHex(ctx, hex.getImage(), hex.dcoords.x, hex.dcoords.y);
+         drawHighlight(ctx, hex.dcoords.x, hex.dcoords.y);
          match = true;
       });
 
@@ -783,7 +798,7 @@ var main = function () {
       now = Date.now();
       delta = now - this.then;
 
-      console.log('delta:' + delta);
+      //console.log('delta:' + delta);
 
       update(delta);
       render();

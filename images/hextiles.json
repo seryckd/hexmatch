@@ -6,5 +6,5 @@
 {"spritename":"desertHex.gif","x":220,"y":0,"height":64,"width":55},
 {"spritename":"sheepHex.gif","x":275,"y":0,"height":64,"width":55},
 {"spritename":"woodHex.gif","x":330,"y":0,"height":64,"width":55},
-{"spritename":"deadHex.gif",x:385,"y":0,"height":64,"width":55}
+{"spritename":"deadHex.gif","x":385,"y":0,"height":64,"width":55}
 ]

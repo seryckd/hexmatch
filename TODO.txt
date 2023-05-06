@@ -44,3 +44,5 @@
 
 // -- SPRITE to be changed so accepts a file definition
 
+// -- when a selection is made then all the tiles turn to the match or maybe go translucent
+      can we put a red border or some other indication all around it
